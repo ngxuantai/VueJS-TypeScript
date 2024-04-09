@@ -1,5 +1,14 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
+const projectAuth = require("../config/firebase").projectAuth;
+
+const requireAuth = (to: any, from: any, next: any) => {
+  const user = projectAuth.currentUser;
+  if (!user) {
+    next({ name: "login", params: {} });
+  }
+  next();
+};
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -26,9 +35,7 @@ const routes: Array<RouteRecordRaw> = [
       layout: "auth",
     },
     component: () => {
-      /* webpackChunkName: "register" */ return import(
-        "../views/LoginView.vue"
-      );
+      /* webpackChunkName: "login" */ return import("../views/LoginView.vue");
     },
   },
   {
@@ -38,9 +45,7 @@ const routes: Array<RouteRecordRaw> = [
       layout: "auth",
     },
     component: () => {
-      /* webpackChunkName: "register" */ return import(
-        "../views/LogoutView.vue"
-      );
+      /* webpackChunkName: "logout" */ return import("../views/LogoutView.vue");
     },
   },
   {
@@ -50,20 +55,12 @@ const routes: Array<RouteRecordRaw> = [
       layout: "default",
     },
     component: () => {
-      /* webpackChunkName: "register" */ return import(
+      /* webpackChunkName: "profile" */ return import(
         "../views/ProfileView.vue"
       );
     },
+    beforeEnter: requireAuth,
   },
-  // {
-  //   path: "/about",
-  //   name: "about",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  // },
 ];
 
 const router = createRouter({
