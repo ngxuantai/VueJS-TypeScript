@@ -53,7 +53,7 @@ export default {
       email.value = "";
       password.value = "";
       if (error !== null) {
-        router.push({ name: "home", params: {} });
+        router.push({ name: "proflie", params: {} });
       }
     };
 

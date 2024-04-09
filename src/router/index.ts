@@ -31,6 +31,30 @@ const routes: Array<RouteRecordRaw> = [
       );
     },
   },
+  {
+    path: "/logout",
+    name: "logout",
+    meta: {
+      layout: "auth",
+    },
+    component: () => {
+      /* webpackChunkName: "register" */ return import(
+        "../views/LogoutView.vue"
+      );
+    },
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    meta: {
+      layout: "default",
+    },
+    component: () => {
+      /* webpackChunkName: "register" */ return import(
+        "../views/ProfileView.vue"
+      );
+    },
+  },
   // {
   //   path: "/about",
   //   name: "about",

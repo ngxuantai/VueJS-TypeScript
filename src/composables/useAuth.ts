@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 
 const error = ref(null);
@@ -58,11 +59,25 @@ async function signIn(email: string, password: string) {
   }
 }
 
+async function logOut() {
+  isPending.value = true;
+  error.value = null;
+  try {
+    await signOut(projectAuth);
+  } catch (err: any) {
+    console.log(err);
+    error.value = err.message.replace("Firebase: ", "");
+  } finally {
+    isPending.value = false;
+  }
+}
+
 export function useAuth() {
   return {
     error,
     isPending,
     signUp,
     signIn,
+    logOut,
   };
 }
