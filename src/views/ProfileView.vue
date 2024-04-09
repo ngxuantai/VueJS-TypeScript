@@ -10,8 +10,6 @@
       <span>{{ user.displayName }}</span>
       <p>{{ user.email }}</p>
     </div>
-  </div>
-  <div class="container">
     <div class="menu-container" v-if="user">
       <div class="title">
         <h3>General</h3>
@@ -40,10 +38,10 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .container {
-  max-width: 1200px;
   padding: 0 32px;
+  margin-top: 50px;
 }
 .infor-container {
   padding-top: 30px;
@@ -76,26 +74,5 @@ export default {
 }
 .menu-container {
   margin-top: 32px;
-}
-.menu-item {
-  display: grid;
-  grid-template-rows: 1fr;
-}
-.menu-item a,
-.menu-item p {
-  color: black;
-  text-decoration: none;
-}
-.item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #f0f0f0;
-}
-.item .icon-text {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
 }
 </style>

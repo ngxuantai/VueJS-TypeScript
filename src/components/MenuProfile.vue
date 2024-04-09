@@ -83,9 +83,33 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  setup(props: any) {
     console.log(props.user);
     return {};
   },
 };
 </script>
+
+<style scoped>
+.menu-item {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.menu-item a,
+.menu-item p {
+  color: black;
+  text-decoration: none;
+}
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+.item .icon-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+</style>
