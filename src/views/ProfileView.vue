@@ -1,19 +1,19 @@
 <template>
   <div class="container">
-    <div class="infor-container" v-if="user">
+    <div class="infor-container" v-if="userRef">
       <div class="avatar-container">
         <img
           src="https://www.w3schools.com/howto/img_avatar.png"
           alt="avatar"
         />
       </div>
-      <span>{{ user.displayName }}</span>
-      <p>{{ user.email }}</p>
+      <span>{{ userRef.displayName }}</span>
+      <p>{{ userRef.email }}</p>
     </div>
-    <div class="menu-container" v-if="user">
+    <div class="menu-container" v-if="userRef">
       <div class="title">
         <h3>General</h3>
-        <menu-profile :user="user" />
+        <menu-profile :user="userRef" />
       </div>
     </div>
   </div>
@@ -30,9 +30,9 @@ export default {
   },
   setup() {
     const { getUser } = useUser();
-    const { user } = getUser();
+    const { userRef } = getUser();
     return {
-      user,
+      userRef,
     };
   },
 };

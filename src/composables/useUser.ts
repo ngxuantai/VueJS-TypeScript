@@ -1,10 +1,10 @@
-import { ref } from "vue";
+import { ref, Ref } from "vue";
 
 const projectFirestore = require("../config/firebase").projectFirestore;
 const projectAuth = require("../config/firebase").projectAuth;
-import { onAuthStateChanged } from "firebase/auth";
+import { User, onAuthStateChanged } from "firebase/auth";
 
-const user = ref<object>(projectAuth.currentUser);
+const user = ref<User | null>(projectAuth.currentUser);
 
 onAuthStateChanged(projectAuth, (_user) => {
   if (_user) {
@@ -13,7 +13,7 @@ onAuthStateChanged(projectAuth, (_user) => {
 });
 
 function getUser() {
-  return { user };
+  return { userRef: (user as Ref<User | null>).value };
 }
 
 export function useUser() {

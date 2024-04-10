@@ -1,6 +1,6 @@
 <template>
-  <div v-if="user">
-    <h1>{{ user.displayName }}</h1>
+  <div v-if="userRef">
+    <h1>{{ userRef.displayName }}</h1>
   </div>
 </template>
 
@@ -10,9 +10,9 @@ import { Options, Vue } from "vue-class-component";
 export default {
   setup() {
     const { getUser } = useUser();
-    const { user } = getUser();
+    const { userRef } = getUser();
     return {
-      user,
+      userRef,
     };
   },
 };
