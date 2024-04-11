@@ -1,0 +1,13 @@
+.form-container {
+  margin-top: 80px;
+  padding: 0 36px;
+}
+
+.border-bottom {
+  border-radius: 0%;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.border-bottom :focus {
+  border-bottom: 1px solid #040404;
+}

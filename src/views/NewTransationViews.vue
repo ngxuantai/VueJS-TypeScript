@@ -1,4 +1,55 @@
 <template>
+  <a-form
+    :model="formState"
+    v-bind="layout"
+    name="nest-messages"
+    @submit="onSubmit"
+    labelAlign="left"
+    class="form-container"
+  >
+    <a-form-item :name="total" :rules="[{ required: true }]">
+      <a-row type="flex" align="middle" :gutter="[16, 0]">
+        <a-col flex="60px" align="end">
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              border-radius: 4px;
+              border: 1px solid black;
+              /* width: 80%; */
+            "
+          >
+            USD
+          </div>
+        </a-col>
+        <a-col flex="auto">
+          <a-input v-model:value="formState.total" />
+        </a-col>
+      </a-row>
+    </a-form-item>
+    <a-form-item
+      :name="category"
+      :rules="[{ type: 'number', min: 0, max: 99 }]"
+    >
+      <a-row type="flex" align="middle" :gutter="[16, 0]">
+        <a-col flex="60px" align="end">
+          <unordered-list-outlined style="font-size: 16px" />
+        </a-col>
+        <a-col flex="auto">
+          <a-input v-model:value="formState.category" type="number" />
+        </a-col>
+      </a-row>
+    </a-form-item>
+    <a-form-item :name="note" label="note">
+      <a-input v-model:value="formState.note" type="text" style="width: 50%" />
+    </a-form-item>
+    <a-form-item :name="date" label="date">
+      <a-input v-model:value="formState.date" type="date" />
+    </a-form-item>
+    <a-form-item :wrapper-col="{ ...layout.wrapperCol }">
+      <a-button type="primary" html-type="submit">Submit</a-button>
+    </a-form-item>
+  </a-form>
   <form @submit.prevent="onSubmit">
     <div class="container">
       <label for="total" class="item-container">
@@ -215,7 +266,7 @@
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { useUser } from "@/composables/useUser";
 import { useCollection } from "@/composables/useCollection";
 import { useStroage } from "@/composables/useStroage";
@@ -240,6 +291,16 @@ export default {
   },
   setup() {
     const isShowDetail = ref<boolean>(false);
+    const formState = reactive({
+      total: 0,
+      category: "",
+      note: "",
+      date: new Date(),
+    });
+    const layout = {
+      labelCol: { span: 8 },
+      wrapperCol: { span: 8 },
+    };
     const total = ref<number>(0);
     const category = ref<string>("");
     const note = ref<string>("");
@@ -248,6 +309,7 @@ export default {
     const person = ref<string>("");
     const file = ref<File | null>(null);
     const errorFile = ref<string | null>(null);
+
     const { getUser } = useUser();
     const { error, addRecord } = useCollection("transactions");
     const { errorStroage, fileUrl, uploadFile } = useStroage("transactions");
@@ -290,10 +352,12 @@ export default {
     };
     return {
       isShowDetail,
+      formState,
       total,
       category,
       note,
       date,
+      layout,
       onChangeFile,
       onSubmit,
     };
@@ -302,24 +366,5 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  margin-top: 80px;
-  padding: 0 36px;
-}
-.item-container {
-  display: flex;
-  align-items: end;
-  padding: 12px 0;
-  gap: 8px;
-}
-.input-container {
-  display: flex;
-  flex-direction: column;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
-}
-.input-container input {
-  border: none;
-  font-size: 14px;
-}
+@import "./NewTransactionView/style.css";
 </style>

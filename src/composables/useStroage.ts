@@ -7,6 +7,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 
+const isPendingStroage = ref<boolean>(false);
 const errorStroage = ref<string | null>(null);
 const filePath = ref<string | null>(null);
 const fileUrl = ref<string>("");
@@ -15,6 +16,7 @@ const { userRef } = getUser();
 
 export function useStroage(name: string) {
   async function uploadFile(file: File) {
+    isPendingStroage.value = true;
     errorStroage.value = null;
     filePath.value = `${name}/${userRef?.uid}/${file.name}`;
     const fileRef = storageRef(projectStorage, filePath.value);
@@ -25,8 +27,10 @@ export function useStroage(name: string) {
     } catch (err: any) {
       console.error(err.message);
       errorStroage.value = err.message;
+    } finally {
+      isPendingStroage.value = false;
     }
   }
 
-  return { errorStroage, fileUrl, uploadFile };
+  return { isPendingStroage, errorStroage, fileUrl, uploadFile };
 }

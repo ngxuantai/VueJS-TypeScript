@@ -1,47 +1,82 @@
 <template>
-  <div class="container">
-    <form @submit.prevent="onSubmit" class="form-container">
-      <label for="email" class="label-item">
-        <span>Email Address</span>
-        <input type="email" v-model="email" />
-      </label>
-      <label for="password" class="label-item">
-        <span>Password</span>
-        <input type="password" v-model="password" />
-      </label>
-      <div class="text error" v-if="error">
-        <span>
-          {{ error }}
-        </span>
-      </div>
-      <button
-        :style="{ backgroundColor: isPending ? '#ccc' : '#007bff' }"
-        type="submit"
-        :disabled="isPending"
-      >
-        {{ isPending ? "Loading..." : "Sign in" }}
-      </button>
-    </form>
-    <div class="text">
-      <span>
-        I'm a new user.
-        <router-link to="/register">Sign up</router-link>
-      </span>
-    </div>
+  <a-form
+    :rules="rules"
+    :label-col="{ span: 4, offset: 6 }"
+    :wrapper-col="{ span: 6 }"
+    style="margin: 0 20px; overflow: hidden"
+    @submit="onSubmit"
+  >
+    <a-form-item has-feedback label="Email" name="email">
+      <a-input v-model:value="email" type="text" autocomplete="off" />
+    </a-form-item>
+    <a-form-item has-feedback label="Password" name="password">
+      <a-input v-model:value="password" type="password" autocomplete="off" />
+    </a-form-item>
+    <a-form-item :wrap-col="{ span: 40 }">
+      <a-button type="primary" :loading="isPending" html-type="submit">
+        {{ isPending ? "Loading" : "Sign in" }}
+      </a-button>
+    </a-form-item>
+  </a-form>
+  <div class="text">
+    <span>
+      I'm a new user.
+      <router-link to="/register">Sign up</router-link>
+    </span>
   </div>
 </template>
-
 <script lang="ts">
-import { ref } from "vue";
-import { useAuth } from "@/composables/useAuth";
+import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
+import type { Rule } from "ant-design-vue/es/form";
 
-export default {
+export default defineComponent({
   setup() {
     const router = useRouter();
     const email = ref<string>("");
     const password = ref<string>("");
     const { error, isPending, signIn } = useAuth();
+
+    let validateEmail = async (_rule: Rule) => {
+      if (email.value === "") {
+        console.log(email.value);
+        return Promise.reject("Please input the password");
+      } else {
+        const emailRejex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if (!emailRejex.test(email.value)) {
+          return Promise.reject("Invalid email address");
+        } else {
+          return Promise.resolve();
+        }
+      }
+    };
+    let validatePassword = async (_rule: Rule) => {
+      if (password.value === "") {
+        return Promise.reject("Please input the password");
+      } else if (password.value.length < 6) {
+        return Promise.reject("Password must be at least 6 characters");
+      } else {
+        return Promise.resolve();
+      }
+    };
+
+    const rules: Record<string, Rule[]> = {
+      email: [
+        {
+          // required: true,
+          validator: validateEmail,
+          trigger: ["change", "blur"],
+        },
+      ],
+      password: [{ validator: validatePassword, trigger: ["change", "blur"] }],
+    };
+    // const handleFinish = () => {
+    //   console.log("finish");
+    // };
+    // const handleValidate = () => {
+    //   console.log("validate");
+    // };
     const onSubmit = async () => {
       await signIn(email.value, password.value);
       email.value = "";
@@ -50,65 +85,23 @@ export default {
         router.push({ name: "profile", params: {} });
       }
     };
-
     return {
       email,
       password,
+      rules,
       error,
       isPending,
       onSubmit,
+      // handleFinish,
+      // handleValidate,
     };
   },
-};
+});
 </script>
 
-<style>
-.container {
-  /* width: 100%; */
-  /* height: 100vh; */
-}
-.form-container {
-  padding: 20px;
-}
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.label-item {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-.label-item span {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
-.label-item input {
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ccc;
-  font-size: 0.8rem;
-}
-.form-container button {
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  border: 1px solid #ccc;
-  font-size: 0.8rem;
-  background-color: #007bff;
-  color: #fff;
-  cursor: pointer;
-}
+<style scoped>
 .text {
-  display: flex;
-  justify-content: center;
-}
-.text span,
-.text a {
-  font-size: 1rem;
-  text-decoration: none;
-}
-.text.error {
-  color: red;
+  text-align: center;
+  margin-top: 20px;
 }
 </style>

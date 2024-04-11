@@ -109,7 +109,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     component: () => {
       /* webpackChunkName: "new-transaction" */ return import(
-        "../views/NewTransationView.vue"
+        "../views/NewTransactionView/index.vue"
       );
     },
     beforeEnter: requireAuth,
