@@ -1,21 +1,26 @@
 <template>
   <a-form
     :rules="rules"
-    :label-col="{ span: 4, offset: 6 }"
-    :wrapper-col="{ span: 6 }"
+    :model="formState"
     style="margin: 0 20px; overflow: hidden"
-    @submit="onSubmit"
+    @finish="onSubmit"
   >
-    <a-form-item has-feedback label="Email" name="email">
-      <a-input v-model:value="email" type="text" autocomplete="off" />
+    <a-form-item label="Email" name="email">
+      <a-input v-model:value="formState.email" type="text" autocomplete="off" />
     </a-form-item>
-    <a-form-item has-feedback label="Password" name="password">
-      <a-input v-model:value="password" type="password" autocomplete="off" />
+    <a-form-item label="Password" name="password">
+      <a-input
+        v-model:value="formState.password"
+        type="password"
+        autocomplete="off"
+      />
     </a-form-item>
     <a-form-item :wrap-col="{ span: 40 }">
-      <a-button type="primary" :loading="isPending" html-type="submit">
-        {{ isPending ? "Loading" : "Sign in" }}
-      </a-button>
+      <a-row justify="center">
+        <a-button type="primary" :loading="isPending" html-type="submit">
+          {{ isPending ? "Loading" : "Sign in" }}
+        </a-button>
+      </a-row>
     </a-form-item>
   </a-form>
   <div class="text">
@@ -26,7 +31,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/composables/useAuth";
 import type { Rule } from "ant-design-vue/es/form";
@@ -34,27 +39,28 @@ import type { Rule } from "ant-design-vue/es/form";
 export default defineComponent({
   setup() {
     const router = useRouter();
-    const email = ref<string>("");
-    const password = ref<string>("");
+    const formState = reactive({
+      email: "",
+      password: "",
+    });
     const { error, isPending, signIn } = useAuth();
 
-    let validateEmail = async (_rule: Rule) => {
-      if (email.value === "") {
-        console.log(email.value);
-        return Promise.reject("Please input the password");
+    let validateEmail = async (_rule: Rule, value: string) => {
+      if (value === "") {
+        return Promise.reject("Please input the email");
       } else {
         const emailRejex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        if (!emailRejex.test(email.value)) {
+        if (!emailRejex.test(value)) {
           return Promise.reject("Invalid email address");
         } else {
           return Promise.resolve();
         }
       }
     };
-    let validatePassword = async (_rule: Rule) => {
-      if (password.value === "") {
+    let validatePassword = async (_rule: Rule, value: string) => {
+      if (value === "") {
         return Promise.reject("Please input the password");
-      } else if (password.value.length < 6) {
+      } else if (value.length < 6) {
         return Promise.reject("Password must be at least 6 characters");
       } else {
         return Promise.resolve();
@@ -64,36 +70,26 @@ export default defineComponent({
     const rules: Record<string, Rule[]> = {
       email: [
         {
-          // required: true,
           validator: validateEmail,
           trigger: ["change", "blur"],
         },
       ],
       password: [{ validator: validatePassword, trigger: ["change", "blur"] }],
     };
-    // const handleFinish = () => {
-    //   console.log("finish");
-    // };
-    // const handleValidate = () => {
-    //   console.log("validate");
-    // };
     const onSubmit = async () => {
-      await signIn(email.value, password.value);
-      email.value = "";
-      password.value = "";
+      await signIn(formState.email, formState.password);
+      formState.email = "";
+      formState.password = "";
       if (error !== null) {
         router.push({ name: "profile", params: {} });
       }
     };
     return {
-      email,
-      password,
+      formState,
       rules,
       error,
       isPending,
       onSubmit,
-      // handleFinish,
-      // handleValidate,
     };
   },
 });

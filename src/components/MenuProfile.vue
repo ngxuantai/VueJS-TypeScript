@@ -92,13 +92,16 @@ export default {
 
 <style scoped>
 .menu-item {
+  margin-top: 20px;
   display: grid;
   grid-template-rows: 1fr;
+  gap: 20px;
 }
 .menu-item a,
 .menu-item p {
   color: black;
   text-decoration: none;
+  margin: auto 0;
 }
 .item {
   display: flex;

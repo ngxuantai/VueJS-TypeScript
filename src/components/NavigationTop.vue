@@ -70,10 +70,11 @@ export default {
 .title p {
   font-weight: bold;
   color: black;
-  margin-left: 8px;
+  margin: 16px 0 16px 8px;
 }
 .options ul {
   display: flex;
   list-style: none;
+  margin: 16px 0;
 }
 </style>

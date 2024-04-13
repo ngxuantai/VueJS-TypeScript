@@ -1,27 +1,42 @@
 <template>
   <a-form
     :rules="rules"
+    :model="formState"
     :label-col="{ span: 4, offset: 2 }"
     :wrapper-col="{ span: 6 }"
     style="margin: 0 20px; overflow: hidden"
-    @submit="onSubmit"
+    @finish="onSubmit"
   >
     <a-form-item has-feedback label="Full name" name="fullName">
-      <a-input v-model:value="email" type="text" autocomplete="off" />
+      <a-input
+        v-model:value="formState.fullName"
+        type="text"
+        autocomplete="off"
+      />
     </a-form-item>
     <a-form-item has-feedback label="Email" name="email">
-      <a-input v-model:value="email" type="text" autocomplete="off" />
+      <a-input v-model:value="formState.email" type="text" autocomplete="off" />
     </a-form-item>
     <a-form-item has-feedback label="Password" name="password">
-      <a-input v-model:value="password" type="password" autocomplete="off" />
+      <a-input
+        v-model:value="formState.password"
+        type="password"
+        autocomplete="off"
+      />
     </a-form-item>
     <a-form-item has-feedback label="Confirm password" name="confirm">
-      <a-input v-model:value="password" type="password" autocomplete="off" />
+      <a-input
+        v-model:value="formState.confirm"
+        type="password"
+        autocomplete="off"
+      />
     </a-form-item>
     <a-form-item :wrap-col="{ span: 40 }">
-      <a-button type="primary" :loading="isPending" html-type="submit">
-        {{ isPending ? "Loading" : "Sign up" }}
-      </a-button>
+      <a-row justify="center">
+        <a-button type="primary" :loading="isPending" html-type="submit">
+          {{ isPending ? "Loading" : "Sign up" }}
+        </a-button>
+      </a-row>
     </a-form-item>
   </a-form>
   <div class="text">
@@ -33,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { useAuth } from "@/composables/useAuth";
 import { useRouter } from "vue-router";
 import type { Rule } from "ant-design-vue/es/form";
@@ -45,41 +60,47 @@ export default {
     const email = ref<string>("");
     const password = ref<string>("");
     const confirm = ref<string>("");
+    const formState = reactive({
+      fullName: "",
+      email: "",
+      password: "",
+      confirm: "",
+    });
     const { error, isPending, signUp } = useAuth();
 
-    let validateFullName = async (_rule: Rule) => {
-      if (fullName.value === "") {
+    let validateFullName = async (_rule: Rule, value: string) => {
+      if (value === "") {
         return Promise.reject("Please input the full name");
       } else {
         return Promise.resolve();
       }
     };
-    let validateEmail = async (_rule: Rule) => {
-      if (email.value === "") {
+    let validateEmail = async (_rule: Rule, value: string) => {
+      if (value === "") {
         console.log(email.value);
         return Promise.reject("Please input the password");
       } else {
         const emailRejex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        if (!emailRejex.test(email.value)) {
+        if (!emailRejex.test(value)) {
           return Promise.reject("Invalid email address");
         } else {
           return Promise.resolve();
         }
       }
     };
-    let validatePassword = async (_rule: Rule) => {
-      if (password.value === "") {
+    let validatePassword = async (_rule: Rule, value: string) => {
+      if (value === "") {
         return Promise.reject("Please input the password");
-      } else if (password.value.length < 6) {
+      } else if (value.length < 6) {
         return Promise.reject("Password must be at least 6 characters");
       } else {
         return Promise.resolve();
       }
     };
-    let validateConfirm = async (_rule: Rule) => {
-      if (confirm.value === "") {
+    let validateConfirm = async (_rule: Rule, value: string) => {
+      if (value === "") {
         return Promise.reject("Please input the confirm password");
-      } else if (confirm.value !== password.value) {
+      } else if (value !== formState.password) {
         return Promise.reject("Password does not match");
       } else {
         return Promise.resolve();
@@ -109,9 +130,7 @@ export default {
 
     return {
       rules,
-      fullName,
-      email,
-      password,
+      formState,
       error,
       isPending,
       onSubmit,
